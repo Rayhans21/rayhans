@@ -5,7 +5,7 @@ export default function About() {
 
       <div className='max-w-3xl text-white/80 space-y-6 text-base md:text-lg leading-relaxed fade-in'>
         <p>
-          Hi, I’m <span className='font-semibold text-white'>Rayhan (YC5NCM)</span> — an amateur radio with a deep curiosity for web development, IoT, and satellite communication. I love exploring how software, hardware, and communication
+          Hi, I’m <span className='font-semibold text-white'>Rayhan (YC5NCM)</span> an amateur radio with a deep curiosity for web development, IoT, and satellite communication. I love exploring how software, hardware, and communication
           systems intersect to create real and meaningful solutions.
         </p>
         <p>
@@ -13,8 +13,8 @@ export default function About() {
           communication setups, signal monitoring tools, and custom electronics for amateur radio operations.
         </p>
         <p>
-          I enjoy turning ideas into working projects—fast, simple, and efficient. My goal is to create technology that is not only functional but enjoyable, and to continue sharing knowledge through open-source projects, experiments, and
-          community activities.
+          I enjoy turning ideas into simple, and efficient projects. My goal is to create technology that is not only functional but enjoyable, and to continue sharing knowledge through open-source projects, experiments, and community
+          activities.
         </p>
       </div>
     </section>

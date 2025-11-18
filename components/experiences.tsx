@@ -1,69 +1,93 @@
 'use client';
-import { useEffect, useRef } from 'react';
+import React from 'react';
 
-interface Experience {
-  role: string;
-  company: string;
-  year: string;
-  description: string;
-}
-
-const experiences: Experience[] = [
+const experiences = [
   {
-    role: 'Frontend Developer',
-    company: 'Inovasi Teknologi Raya',
-    year: '2025',
-    description: 'Developing high-quality UI components and user experiences.',
+    title: 'Cloud Camp Ramadhan 2024',
+    org: 'IDCloudHost',
+    date: 'Mar 2024',
+    desc: 'A Hackathon event for Developers, Designers and PMs to collaborate and build a project in one night.',
   },
   {
-    role: 'Network Access Engineering Intern',
-    company: 'Telkomsel Sumbagteng',
-    year: '2025',
-    description: 'Supporting broadband access systems and field operations.',
+    title: 'Dicoding - Mobile Apps Developer',
+    org: 'Kampus Merdeka x Dicoding',
+    date: 'Aug - Dec 2022',
+    desc: 'Certified Independent Study Program focusing on Android mobile development.',
+  },
+  {
+    title: 'VSGA - Junior Web Developer',
+    org: 'Digitalent Kominfo',
+    date: 'Jun 2022',
+    desc: 'National web development training & certification based on Indonesia’s SKKNI standard.',
+  },
+  {
+    title: 'ITTS Huawei Students Developer',
+    org: 'Huawei Developer',
+    date: 'Feb 2022',
+    desc: 'Developing Android applications using Huawei Mobile Services and Developer Kit.',
+  },
+  {
+    title: 'Telkom Antares IoT',
+    org: 'Telkom Indonesia & Antares',
+    date: 'Jun 2020',
+    desc: 'Hands-on IoT digital platform workshop, road to DILo Hackathon 2020.',
+  },
+  {
+    title: 'Cyber Security Workshop',
+    org: 'Garuda Cyber Indonesia',
+    date: 'Dec 2019',
+    desc: 'Learning cyber security basics, hacking methods, and social engineering.',
+  },
+  {
+    title: 'Telkom Hands-On API MDD',
+    org: 'Antares & BigBox',
+    date: 'Jul 2019',
+    desc: 'Two-day hands-on workshop about API MDD at DILo Pekanbaru.',
+  },
+  {
+    title: 'Lailatul Coding',
+    org: 'DILo Telkom Indonesia',
+    date: 'May 2019',
+    desc: 'Charity event to build a website in one night during Ramadan.',
+  },
+  {
+    title: 'National Programming Contest',
+    org: 'Schematics ITS',
+    date: 'Aug 2018',
+    desc: 'National-level algorithm & programming competition.',
+  },
+  {
+    title: 'Algorithm Implementation Training',
+    org: 'STMIK AMIK Riau',
+    date: 'Oct 2017',
+    desc: 'Pascal programming & algorithm implementation training.',
   },
 ];
 
 export default function Experiences() {
-  const refs = useRef<HTMLDivElement[]>([]);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) entry.target.classList.add('show');
-        });
-      },
-      { threshold: 0.2 }
-    );
-
-    refs.current.forEach((el) => el && observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
-
   return (
-    <section className='w-full flex justify-center px-6 sm:px-10 md:px-20 lg:px-40 py-20'>
-      <div className='relative w-full max-w-3xl'>
-        {/* LINE */}
-        <div className='timeline-line'></div>
+    <section id='experiences' className='py-24 bg-linear-to-b from-[#0a0a0a] via-gray-900 to-gray-950 text-white'>
+      <div className='max-w-4xl mx-auto px-6'>
+        <h2 className='text-4xl font-bold text-center mb-16'>Experiences</h2>
 
-        <div className='space-y-16'>
-          {experiences.map((exp, i) => (
-            <div
-              key={i}
-              ref={(el) => {
-                if (el) refs.current[i] = el;
-              }}
-              style={{ ['--delay' as string]: `${i * 0.15}s` }}
-              className='timeline-item fade-unit'
-            >
-              <div className='timeline-dot'></div>
+        <div className='relative border-l border-gray-700'>
+          {experiences.map((exp, index) => (
+            <div key={index} className='relative pl-10 mb-12 group'>
+              <div className='absolute -left-[9px] top-2'>
+                <div className='w-4 h-4 rounded-full bg-blue-500 shadow-[0_0_10px_3px_rgba(59,130,246,0.7)] group-hover:scale-125 transition-transform'></div>
+              </div>
 
-              <div className='ml-12'>
-                <h3 className='text-xl font-semibold'>{exp.role}</h3>
-                <p className='text-sm opacity-70'>
-                  {exp.company} • {exp.year}
+              <div
+                className='bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-5 
+                              shadow-md group-hover:shadow-xl transition-all duration-300'
+              >
+                <h3 className='text-xl font-semibold'>{exp.title}</h3>
+
+                <p className='text-sm text-gray-400 mt-1'>
+                  {exp.org} • {exp.date}
                 </p>
-                <p className='mt-2 opacity-80'>{exp.description}</p>
+
+                <p className='text-gray-300 mt-3 leading-relaxed'>{exp.desc}</p>
               </div>
             </div>
           ))}

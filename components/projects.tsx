@@ -26,7 +26,7 @@ export default function Projects() {
     <section id='projects' className='w-full py-24 px-6 text-center'>
       <h2 className='text-3xl md:text-4xl font-bold text-white mb-6'>Projects</h2>
 
-      <p className='text-white/70 max-w-xl text-base md:text-lg mb-12 mx-auto'>A collection of projects I&apos;ve built — from frontend experiments to amateur radio tools.</p>
+      <p className='text-white/70 max-w-xl text-base md:text-lg mb-12 mx-auto'>Best collection of projects I&apos;ve built.</p>
 
       <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto'>
         {projects.map((project) => (

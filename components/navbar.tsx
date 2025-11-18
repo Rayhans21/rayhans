@@ -33,7 +33,7 @@ export default function Navbar() {
         <div className='hidden md:flex gap-8'>
           <NavbarLink href='#home' label='Home' />
           <NavbarLink href='#about' label='About' />
-          <NavbarLink href='#projects' label='Projects' />
+          <NavbarLink href='#experiences' label='Experiences' />
           <NavbarLink href='#contact' label='Contact' />
         </div>
 
@@ -47,7 +47,7 @@ export default function Navbar() {
           <div className='px-6 py-6 flex flex-col items-start space-y-6'>
             <NavbarLink href='#home' label='Home' onClick={() => setOpen(false)} />
             <NavbarLink href='#about' label='About' onClick={() => setOpen(false)} />
-            <NavbarLink href='#projects' label='Projects' onClick={() => setOpen(false)} />
+            <NavbarLink href='#experiences' label='Experiences' onClick={() => setOpen(false)} />
             <NavbarLink href='#contact' label='Contact' onClick={() => setOpen(false)} />
           </div>
         </div>
