@@ -10,7 +10,7 @@ export default function Hero() {
           <div className='relative w-[280px] md:w-[340px]'>
             <Image src='/RayhanTHAILAND.webp' alt='Foto Rayhan' width={340} height={420} className='object-cover select-none' priority />
             <h1
-              className='absolute -left-4 md:-left-16 bottom-45 text-white font-bold leading-[0.95] tracking-tight drop-shadow-[0_8px_20px_rgba(0,0,0,0.6)] 
+              className='absolute -left-4 md:-left-16 bottom-[45px] text-white font-bold leading-[0.95] tracking-tight drop-shadow-[0_8px_20px_rgba(0,0,0,0.6)] 
                            text-6xl md:text-8xl'
             >
               Rayhan

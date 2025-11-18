@@ -43,11 +43,13 @@ export default function Navbar() {
       </div>
 
       {open && (
-        <div className='md:hidden bg-black/90 backdrop-blur-lg px-6 py-4 space-y-4 text-white'>
-          <NavbarLink href='#home' label='Home' onClick={() => setOpen(false)} />
-          <NavbarLink href='#about' label='About' onClick={() => setOpen(false)} />
-          <NavbarLink href='#projects' label='Projects' onClick={() => setOpen(false)} />
-          <NavbarLink href='#contact' label='Contact' onClick={() => setOpen(false)} />
+        <div className='md:hidden bg-black/90 backdrop-blur-xl text-white border-t border-white/10'>
+          <div className='px-6 py-6 flex flex-col items-start space-y-6'>
+            <NavbarLink href='#home' label='Home' onClick={() => setOpen(false)} />
+            <NavbarLink href='#about' label='About' onClick={() => setOpen(false)} />
+            <NavbarLink href='#projects' label='Projects' onClick={() => setOpen(false)} />
+            <NavbarLink href='#contact' label='Contact' onClick={() => setOpen(false)} />
+          </div>
         </div>
       )}
     </nav>
@@ -56,7 +58,7 @@ export default function Navbar() {
 
 function NavbarLink({ href, label, onClick }: { href: string; label: string; onClick?: () => void }) {
   return (
-    <Link href={href} className='text-white/90 hover:text-white transition-colors text-sm tracking-wide' onClick={onClick}>
+    <Link href={href} onClick={onClick} className='text-white/90 hover:text-white transition-colors text-base tracking-wide py-2'>
       {label}
     </Link>
   );
