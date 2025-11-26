@@ -22,7 +22,7 @@ const experiences = [
   },
   {
     title: 'Orientation on Strengthening Kwartir Management Capacity',
-    org: 'Indragiri Hilir District Branch of the Gerakan Pramuka',
+    org: 'Indragiri Hilir Scout Movement',
     date: 'Sep 2023',
     desc: 'Kwartir Management Capacity Building for Scout Leaders in Indragiri Hilir.',
   },
