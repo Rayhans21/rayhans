@@ -3,10 +3,34 @@ import React from 'react';
 
 const experiences = [
   {
+    title: 'VSGA - Video Editing',
+    org: 'Digitalent Kominfo',
+    date: 'Mei 2024',
+    desc: 'National video editing training & certification based on Indonesia’s SKKNI standard.',
+  },
+  {
     title: 'Cloud Camp Ramadhan 2024',
     org: 'IDCloudHost',
     date: 'Mar 2024',
     desc: 'A Hackathon event for Developers, Designers and PMs to collaborate and build a project in one night.',
+  },
+  {
+    title: 'Youngsters on the Air Camp 2023',
+    org: 'International Amateur Radio Union (IARU) Region 3',
+    date: 'Oct 2023',
+    desc: 'Young Amateur Radio Operators camp to learn about radio communications technology innovations.',
+  },
+  {
+    title: 'Orientation on Strengthening Kwartir Management Capacity',
+    org: 'Indragiri Hilir District Branch of the Gerakan Pramuka',
+    date: 'Sep 2023',
+    desc: 'Kwartir Management Capacity Building for Scout Leaders in Indragiri Hilir.',
+  },
+  {
+    title: 'Water Rescue Training',
+    org: 'National Search And Rescue Agency',
+    date: 'Mar 2023',
+    desc: 'Training on water rescue techniques and skills for emergency situations.',
   },
   {
     title: 'Dicoding - Mobile Apps Developer',
@@ -25,6 +49,18 @@ const experiences = [
     org: 'Huawei Developer',
     date: 'Feb 2022',
     desc: 'Developing Android applications using Huawei Mobile Services and Developer Kit.',
+  },
+  {
+    title: 'Focus Group Discussion Road to 2022 Digital Broadcasting and Analog-Switch Off (ASO)',
+    org: 'Riau Regional Indonesian Broadcasting Commission',
+    date: 'Nov 2021',
+    desc: 'Analog to Digital Broadcasting transition discussion with local broadcasters.',
+  },
+  {
+    title: 'Institutional Management Training in Context of National Assessment',
+    org: 'Indragiri Hilir Education Dept.',
+    date: 'Jun 2021',
+    desc: 'Training for school staff on managing schools to meet national assessment standards.',
   },
   {
     title: 'Telkom Antares IoT',
@@ -77,10 +113,7 @@ export default function Experiences() {
                 <div className='w-4 h-4 rounded-full bg-blue-500 shadow-[0_0_10px_3px_rgba(59,130,246,0.7)] group-hover:scale-125 transition-transform'></div>
               </div>
 
-              <div
-                className='bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-5 
-                              shadow-md group-hover:shadow-xl transition-all duration-300'
-              >
+              <div className='bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-5 shadow-md group-hover:shadow-xl transition-all duration-300'>
                 <h3 className='text-xl font-semibold'>{exp.title}</h3>
 
                 <p className='text-sm text-gray-400 mt-1'>
