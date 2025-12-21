@@ -97,12 +97,12 @@ export default function MusdaPage() {
       {!loading && filteredData.length === 0 && <p className='text-center text-gray-600'>Data tidak ditemukan.</p>}
 
       {!loading && filteredData.length > 0 && (
-        <div className='overflow-x-auto rounded-lg border border-gray-200 bg-white max-w-7xl mx-auto'>
+        <div className='overflow-x-auto overflow-y-auto max-h-[70vh] rounded-lg border border-gray-200 bg-white max-w-7xl mx-auto'>
           <table className='w-full border-collapse text-sm'>
-            <thead className='sticky top-0 z-10 bg-gray-100 border-b border-gray-300'>
+            <thead className='sticky top-0 z-20 bg-blue-200 border-b border-blue-300 shadow-sm'>
               <tr>
                 {headers.map((key) => (
-                  <th key={key} className='px-4 py-3 text-left font-semibold text-gray-700 whitespace-nowrap'>
+                  <th key={key} className='px-4 py-3 text-left font-bold text-black whitespace-nowrap'>
                     {key}
                   </th>
                 ))}
