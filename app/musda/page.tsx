@@ -64,7 +64,22 @@ export default function MusdaPage() {
 
   return (
     <section className='min-h-screen px-6 py-24 bg-gray-50'>
-      <h1 className='text-3xl font-bold text-gray-900 mb-8 text-center'>Data Donasi MUSDA IX</h1>
+      <div className='relative mb-10'>
+        {/* Container */}
+        <div className='flex items-center justify-between max-w-6xl mx-auto px-4'>
+          {/* Logo kiri */}
+          <img src='/Logo_ORARI.png' alt='Logo ORARI' className='h-8 sm:h-24 w-auto object-contain' />
+
+          {/* Spacer */}
+          <div className='flex-1' />
+
+          {/* Logo kanan */}
+          <img src='/MUSDA_IX_REV2.png' alt='Logo MUSDA IX' className='h-8 sm:h-24 w-auto object-contain' />
+        </div>
+
+        {/* Judul absolute center */}
+        <h1 className='absolute inset-0 flex items-center justify-center text-2xl sm:text-3xl font-bold text-gray-900 text-center pointer-events-none'>Data Donasi MUSDA IX</h1>
+      </div>
 
       {/* Search */}
       <div className='max-w-md mx-auto mb-6'>
