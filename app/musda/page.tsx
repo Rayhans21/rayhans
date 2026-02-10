@@ -78,7 +78,8 @@ export default function MusdaPage() {
         </div>
 
         {/* Judul absolute center */}
-        <h1 className='absolute inset-0 flex items-center justify-center text-2xl sm:text-3xl font-bold text-gray-900 text-center pointer-events-none'>Data Donasi MUSDA IX</h1>
+        <h1 className='absolute inset-0 flex items-center justify-center text-2xl sm:text-3xl font-bold text-gray-900 text-center pointer-events-none'>(Arsip) Laporan Donasi MUSDA IX</h1>
+        <p className='mt-2 text-sm sm:text-base text-gray-600 max-w-3xl mx-auto'>Event MUSDA IX telah selesai. Data ini ditampilkan sebagai dokumentasi transparansi dan studi kasus pengelolaan data berbasis web.</p>
       </div>
 
       {/* Search */}
