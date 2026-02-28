@@ -131,7 +131,7 @@ export default function MotoLogPage() {
   /* MAINTENANCE LOGIC             */
   /* ============================= */
 
-  const SERVICE_INTERVAL = 2000;
+  const SERVICE_INTERVAL = 8000;
   const OIL_INTERVAL = 2000;
   const TIRE_INTERVAL = 12000;
   const serviceKm = displayEvents.find((e) => e.event_type === 'service')?.odometer_km ?? 0;
@@ -161,29 +161,73 @@ export default function MotoLogPage() {
       <h1 style={{ marginBottom: 40, letterSpacing: -1 }}>MotoLog</h1>
 
       {/* PLATE NUMBER */}
-      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 60 }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          marginBottom: 60,
+        }}
+      >
         <div
           onClick={() => !isPrivate && setShowUnlock(true)}
           style={{
-            width: 420,
+            width: '100%',
+            maxWidth: 420,
             aspectRatio: '27 / 11',
             background: '#fff',
             borderRadius: 18,
             border: '4px solid #000',
             position: 'relative',
             cursor: isPrivate ? 'default' : 'pointer',
+            boxSizing: 'border-box',
+            overflow: 'hidden',
           }}
         >
-          <div style={{ position: 'absolute', inset: 10, border: '3px solid #000', borderRadius: 12 }} />
-          <div style={{ position: 'absolute', top: '35%', left: '50%', transform: 'translate(-50%, -50%)', display: 'flex', gap: 24, fontSize: 44, fontWeight: 800, letterSpacing: 4, color: '#000' }}>
+          <div
+            style={{
+              position: 'absolute',
+              inset: 10,
+              border: '3px solid #000',
+              borderRadius: 12,
+            }}
+          />
+
+          {/* PLATE TEXT */}
+          <div
+            style={{
+              position: 'absolute',
+              top: '45%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              display: 'flex',
+              gap: 'clamp(8px, 4vw, 24px)',
+              fontSize: 'clamp(22px, 8vw, 44px)',
+              fontWeight: 800,
+              letterSpacing: 'clamp(1px, 0.6vw, 4px)',
+              color: '#000',
+              whiteSpace: 'nowrap',
+            }}
+          >
             {plateNumber.split(' ').map((part, i) => (
               <span key={i}>{part}</span>
             ))}
           </div>
-          <div style={{ position: 'absolute', bottom: 20, right: 28, fontSize: 'clamp(14px, 2.5vw, 22px)', fontWeight: 700, color: '#000' }}>{expNumber}</div>
+
+          {/* EXP NUMBER */}
+          <div
+            style={{
+              position: 'absolute',
+              bottom: 18,
+              right: 20,
+              fontSize: 'clamp(12px, 3vw, 22px)',
+              fontWeight: 700,
+              color: '#000',
+            }}
+          >
+            {expNumber}
+          </div>
         </div>
       </div>
-
       {/* NEW RACING SPEEDOMETER */}
       <div style={{ width: 320, margin: '0 auto 60px', textAlign: 'center' }}>
         <svg width='320' height='260' viewBox='0 0 320 260'>
