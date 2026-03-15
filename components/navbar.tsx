@@ -10,13 +10,33 @@ const oleo = Oleo_Script_Swash_Caps({
   weight: ['400'],
 });
 
+const navLinks = [
+  { href: '#home', label: 'Home' },
+  { href: '#about', label: 'About' },
+  { href: '#skills', label: 'Skills' },
+  { href: '#projects', label: 'Projects' },
+  { href: '#experiences', label: 'Experiences' },
+  { href: '#contact', label: 'Contact' },
+];
+
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState('home');
 
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 10);
+
+      // Detect active section
+      const sections = navLinks.map((l) => l.href.replace('#', ''));
+      for (const id of [...sections].reverse()) {
+        const el = document.getElementById(id);
+        if (el && window.scrollY >= el.offsetTop - 120) {
+          setActiveSection(id);
+          break;
+        }
+      }
     };
 
     window.addEventListener('scroll', handleScroll);
@@ -31,10 +51,14 @@ export default function Navbar() {
         </Link>
 
         <div className='hidden md:flex gap-8'>
-          <NavbarLink href='#home' label='Home' />
-          <NavbarLink href='#about' label='About' />
-          <NavbarLink href='#experiences' label='Experiences' />
-          <NavbarLink href='#contact' label='Contact' />
+          {navLinks.map((link) => (
+            <NavbarLink
+              key={link.href}
+              href={link.href}
+              label={link.label}
+              active={activeSection === link.href.replace('#', '')}
+            />
+          ))}
         </div>
 
         <button onClick={() => setOpen(!open)} className='md:hidden text-white'>
@@ -45,10 +69,15 @@ export default function Navbar() {
       {open && (
         <div className='md:hidden bg-black/90 backdrop-blur-xl text-white border-t border-white/10'>
           <div className='px-6 py-6 flex flex-col items-start space-y-6'>
-            <NavbarLink href='#home' label='Home' onClick={() => setOpen(false)} />
-            <NavbarLink href='#about' label='About' onClick={() => setOpen(false)} />
-            <NavbarLink href='#experiences' label='Experiences' onClick={() => setOpen(false)} />
-            <NavbarLink href='#contact' label='Contact' onClick={() => setOpen(false)} />
+            {navLinks.map((link) => (
+              <NavbarLink
+                key={link.href}
+                href={link.href}
+                label={link.label}
+                active={activeSection === link.href.replace('#', '')}
+                onClick={() => setOpen(false)}
+              />
+            ))}
           </div>
         </div>
       )}
@@ -56,10 +85,32 @@ export default function Navbar() {
   );
 }
 
-function NavbarLink({ href, label, onClick }: { href: string; label: string; onClick?: () => void }) {
+function NavbarLink({
+  href,
+  label,
+  active,
+  onClick,
+}: {
+  href: string;
+  label: string;
+  active?: boolean;
+  onClick?: () => void;
+}) {
   return (
-    <Link href={href} onClick={onClick} className='text-white/90 hover:text-white transition-colors text-base tracking-wide py-2'>
+    <Link
+      href={href}
+      onClick={onClick}
+      className={`relative text-base tracking-wide py-2 transition-colors group ${
+        active ? 'text-yellow-400' : 'text-white/70 hover:text-white'
+      }`}
+    >
       {label}
+      {/* Underline indicator */}
+      <span
+        className={`absolute bottom-0 left-0 h-[2px] bg-yellow-400 transition-all duration-300 ${
+          active ? 'w-full' : 'w-0 group-hover:w-full'
+        }`}
+      />
     </Link>
   );
 }

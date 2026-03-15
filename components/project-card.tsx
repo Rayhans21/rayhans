@@ -1,32 +1,59 @@
-import React from 'react';
+import Image from 'next/image';
 
 interface ProjectCardProps {
   title: string;
   description: string;
   tech: string[];
   link?: string;
+  image?: string;
 }
 
-export default function ProjectCard({ title, description, tech, link }: ProjectCardProps) {
+export default function ProjectCard({ title, description, tech, link, image }: ProjectCardProps) {
   return (
-    <div className='bg-white/5 border border-white/10 p-6 rounded-xl hover:bg-white/10 transition'>
-      <h3 className='text-xl font-semibold text-white mb-2'>{title}</h3>
+    <div className='bg-white/5 border border-white/10 rounded-xl overflow-hidden hover:bg-white/10 hover:-translate-y-1 transition-all duration-300 flex flex-col'>
 
-      <p className='text-white/60 text-sm mb-4'>{description}</p>
-
-      <div className='flex flex-wrap gap-2 mb-4'>
-        {tech.map((t) => (
-          <span key={t} className='text-xs bg-white/10 px-2 py-1 rounded-md text-white/80'>
-            {t}
-          </span>
-        ))}
+      {/* Image / placeholder */}
+      <div className='relative w-full h-44 bg-white/5 overflow-hidden'>
+        {image ? (
+          <Image
+            src={image}
+            alt={title}
+            fill
+            className='object-cover'
+          />
+        ) : (
+          <div className='w-full h-full flex items-center justify-center'>
+            <span className='text-white/20 text-sm'>No preview</span>
+          </div>
+        )}
+        {/* Subtle gradient overlay bawah */}
+        <div className='absolute inset-0 bg-gradient-to-t from-black/40 to-transparent' />
       </div>
 
-      {link && (
-        <a href={link} target='_blank' className='text-sm text-indigo-400 hover:underline'>
-          View Repository →
-        </a>
-      )}
+      <div className='p-6 flex flex-col flex-1'>
+        <h3 className='text-base font-semibold text-white mb-2 leading-snug'>{title}</h3>
+
+        <p className='text-white/60 text-sm mb-4 leading-relaxed flex-1'>{description}</p>
+
+        <div className='flex flex-wrap gap-2 mb-5'>
+          {tech.map((t) => (
+            <span key={t} className='text-xs bg-white/10 px-2.5 py-1 rounded-full text-white/70'>
+              {t}
+            </span>
+          ))}
+        </div>
+
+        {link && (
+          <a
+            href={link}
+            target='_blank'
+            rel='noopener noreferrer'
+            className='text-xs font-medium text-yellow-400 hover:text-yellow-300 transition-colors'
+          >
+            View Repository →
+          </a>
+        )}
+      </div>
     </div>
   );
 }

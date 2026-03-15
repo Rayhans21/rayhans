@@ -1,17 +1,40 @@
-// components/Footer.tsx
+import Link from 'next/link';
 
 export default function Footer() {
-  return (
-    <footer className='bg-black text-gray-400 py-8 border-t border-white/10'>
-      <div className='container mx-auto px-4 text-center space-y-1'>
-        <p className='text-sm opacity-60'>© {new Date().getFullYear()} Muhammad Rayhan Syah. All rights reserved.</p>
+  const navLinks = [
+    { href: '#home', label: 'Home' },
+    { href: '#about', label: 'About' },
+    { href: '#skills', label: 'Skills' },
+    { href: '#projects', label: 'Projects' },
+    { href: '#experiences', label: 'Experiences' },
+    { href: '#contact', label: 'Contact' },
+  ];
 
-        <p className='text-sm'>
-          Created by{' '}
-          <a href='https://www.instagram.com/muhammadrayhans' target='_blank' rel='noopener noreferrer' className='underline hover:text-yellow-400 transition'>
-            @muhammadrayhans
-          </a>
-        </p>
+  return (
+    <footer className='bg-black border-t border-white/10'>
+      <div className='max-w-5xl mx-auto px-6 py-10'>
+
+        <div className='flex flex-col md:flex-row justify-between items-center gap-6'>
+
+          {/* Quick links */}
+          <div className='flex flex-wrap justify-center md:justify-start gap-x-6 gap-y-2'>
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className='text-white/40 hover:text-yellow-400 text-sm transition-colors'
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+
+          {/* Copyright */}
+          <p className='text-white/30 text-xs text-center whitespace-nowrap'>
+            © {new Date().getFullYear()} Muhammad Rayhan Syah
+          </p>
+
+        </div>
       </div>
     </footer>
   );

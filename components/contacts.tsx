@@ -38,7 +38,7 @@ export default function ContactSection() {
 
           <div className='w-full h-px bg-white/10 my-12'></div>
 
-          <a href='mailto:rey.5ncm@gmail.com' className='inline-block px-8 py-4 bg-white text-black font-medium rounded-lg hover:bg-yellow-300 transition shadow-lg'>
+          <a href='mailto:rey.5ncm@gmail.com' className='inline-block px-8 py-4 bg-yellow-400 text-black font-semibold rounded-lg hover:bg-yellow-300 transition shadow-lg'>
             Send me a message →
           </a>
         </div>
