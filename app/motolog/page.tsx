@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase-motolog';
 
 type Event = {
   id: string;
@@ -54,16 +53,22 @@ export default function MotoLogPage() {
     if (!isPrivate) return;
     let ignore = false;
     async function loadRealData() {
-      const { data } = await supabase.from('events').select('*').order('event_date', { ascending: false });
+      const res = await fetch('/motolog/api/events', {
+        headers: { 'x-motolog-token': password },
+      });
+      const data: Event[] = await res.json();
       if (!ignore) setRealEvents(data ?? []);
     }
     loadRealData();
     return () => {
       ignore = true;
     };
-  }, [isPrivate]);
+  }, [isPrivate, password]);
 
-  const displayEvents = (isPrivate ? realEvents : dummyEvents).slice().sort((a, b) => new Date(b.event_date).getTime() - new Date(a.event_date).getTime());
+  const displayEvents = (isPrivate ? realEvents : dummyEvents)
+    .slice()
+    .sort((a, b) => new Date(b.event_date).getTime() - new Date(a.event_date).getTime());
+
   const plateNumber = isPrivate ? 'BM 4583 AAL' : 'YC 5 NCM';
   const expNumber = isPrivate ? '10•24' : '21•02';
   const latestOdometer = displayEvents.length > 0 ? (displayEvents[0].odometer_km ?? 0) : 0;
@@ -149,7 +154,6 @@ export default function MotoLogPage() {
     if (data.success) {
       setIsPrivate(true);
       setShowUnlock(false);
-      setPassword('');
     } else {
       setError('Password salah');
     }
@@ -161,13 +165,7 @@ export default function MotoLogPage() {
       <h1 style={{ marginBottom: 40, letterSpacing: -1 }}>MotoLog</h1>
 
       {/* PLATE NUMBER */}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          marginBottom: 60,
-        }}
-      >
+      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 60 }}>
         <div
           onClick={() => !isPrivate && setShowUnlock(true)}
           style={{
@@ -183,16 +181,8 @@ export default function MotoLogPage() {
             overflow: 'hidden',
           }}
         >
-          <div
-            style={{
-              position: 'absolute',
-              inset: 10,
-              border: '3px solid #000',
-              borderRadius: 12,
-            }}
-          />
+          <div style={{ position: 'absolute', inset: 10, border: '3px solid #000', borderRadius: 12 }} />
 
-          {/* PLATE TEXT */}
           <div
             style={{
               position: 'absolute',
@@ -213,7 +203,6 @@ export default function MotoLogPage() {
             ))}
           </div>
 
-          {/* EXP NUMBER */}
           <div
             style={{
               position: 'absolute',
@@ -228,7 +217,8 @@ export default function MotoLogPage() {
           </div>
         </div>
       </div>
-      {/* NEW RACING SPEEDOMETER */}
+
+      {/* SPEEDOMETER */}
       <div style={{ width: 320, margin: '0 auto 60px', textAlign: 'center' }}>
         <svg width='320' height='260' viewBox='0 0 320 260'>
           <defs>
@@ -243,16 +233,12 @@ export default function MotoLogPage() {
             </linearGradient>
           </defs>
 
-          {/* Decorative Outer Rings */}
           <path d={describeArc(160, 180, 145, -125, 125)} fill='none' stroke='#222' strokeWidth='1' />
           <path d={describeArc(160, 180, 138, -120, 120)} fill='none' stroke='url(#ringGradient)' strokeWidth='3' strokeOpacity='0.5' />
-
-          {/* Main Track */}
           <path d={describeArc(160, 180, 120, -120, 120)} fill='none' stroke='#111' strokeWidth='14' strokeLinecap='round' />
 
           {renderTicks()}
 
-          {/* Needle with Animation Fix */}
           <g
             style={{
               transform: `rotate(${needleRotation}deg)`,
@@ -265,7 +251,6 @@ export default function MotoLogPage() {
             <circle cx='160' cy='180' r='4' fill='#fff' />
           </g>
 
-          {/* Neon Digital Display */}
           <text x='160' y='235' textAnchor='middle' fill='#00ff7f' fontSize='42' fontWeight='800' fontFamily='monospace' filter='url(#neonGlow)'>
             {efficiency ? efficiency.toFixed(1) : '0.0'}
           </text>
@@ -291,25 +276,18 @@ export default function MotoLogPage() {
         </div>
       </div>
 
-      {/* MAINTENANCE & HISTORY (Sama seperti sebelumnya) */}
+      {/* MAINTENANCE */}
       <div style={{ marginBottom: 60 }}>
         <h2 style={{ marginBottom: 24 }}>Maintenance Status</h2>
         <div style={{ display: 'grid', gap: 24 }}>
-          <div>
-            🛠 Service Berkala <ProgressBar value={calcProgress(serviceKm, SERVICE_INTERVAL)} />
-          </div>
-          <div>
-            🛢 Ganti Oli <ProgressBar value={calcProgress(oilKm, OIL_INTERVAL)} />
-          </div>
-          <div>
-            ⚙️ Gear Oil <ProgressBar value={calcProgress(gearOilKm, OIL_INTERVAL * 2)} />
-          </div>
-          <div>
-            🛞 Ganti Ban <ProgressBar value={calcProgress(tireKm, TIRE_INTERVAL)} />
-          </div>
+          <div>🛠 Service Berkala <ProgressBar value={calcProgress(serviceKm, SERVICE_INTERVAL)} /></div>
+          <div>🛢 Ganti Oli <ProgressBar value={calcProgress(oilKm, OIL_INTERVAL)} /></div>
+          <div>⚙️ Gear Oil <ProgressBar value={calcProgress(gearOilKm, OIL_INTERVAL * 2)} /></div>
+          <div>🛞 Ganti Ban <ProgressBar value={calcProgress(tireKm, TIRE_INTERVAL)} /></div>
         </div>
       </div>
 
+      {/* HISTORY */}
       <h2 style={{ marginBottom: 20 }}>Riwayat Perjalanan</h2>
       <div style={{ display: 'grid', gap: 16 }}>
         {displayEvents.map((event) => (
@@ -333,6 +311,7 @@ export default function MotoLogPage() {
               placeholder='Enter Code'
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleUnlock()}
               style={{ width: '100%', padding: 12, marginBottom: 16, background: '#000', border: '1px solid #333', color: '#fff', borderRadius: 12, textAlign: 'center', fontSize: 18 }}
             />
             <button onClick={handleUnlock} disabled={loading} style={{ width: '100%', padding: 14, background: '#fff', color: '#000', borderRadius: 12, fontWeight: 700, cursor: 'pointer' }}>

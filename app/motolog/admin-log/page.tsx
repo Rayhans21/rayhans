@@ -1,9 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase-motolog';
 
-// 1. Definisikan tipe literal untuk event_type agar tidak 'any'
 type EventType = 'fuel' | 'oil_change' | 'periodic_service' | 'tire_change' | 'gear_oil';
 
 type Event = {
@@ -17,47 +15,76 @@ type Event = {
 };
 
 export default function SecretPage() {
+  const [token, setToken] = useState('');
+  const [tokenInput, setTokenInput] = useState('');
+  const [authError, setAuthError] = useState('');
+  const [authLoading, setAuthLoading] = useState(false);
+
   const [events, setEvents] = useState<Event[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [savingId, setSavingId] = useState<string | null>(null);
 
   /* ============================= */
-  /* LOAD DATA (FIXED EFFECT)      */
+  /* AUTH                          */
   /* ============================= */
 
-  // Menggunakan fungsi di dalam useEffect untuk menghindari peringatan cascading renders
+  async function handleAuth() {
+    setAuthLoading(true);
+    setAuthError('');
+    const res = await fetch('/motolog/api/auth', {
+      method: 'POST',
+      body: JSON.stringify({ password: tokenInput }),
+    });
+    const data = await res.json();
+    if (data.success) {
+      setToken(tokenInput);
+      setTokenInput('');
+    } else {
+      setAuthError('Password salah');
+    }
+    setAuthLoading(false);
+  }
+
+  /* ============================= */
+  /* LOAD DATA                     */
+  /* ============================= */
+
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  function loadData() {
+    setRefreshKey((k) => k + 1);
+  }
+
   useEffect(() => {
-    let isMounted = true;
+    if (!token) return;
+    let ignore = false;
 
-    async function loadData() {
-      try {
-        const { data } = await supabase.from('events').select('*').order('event_date', { ascending: false }).order('odometer_km', { ascending: false });
-
-        if (isMounted) {
-          setEvents(data || []);
-          setLoading(false);
-        }
-      } catch (err) {
-        console.error(err);
+    async function load() {
+      setLoading(true);
+      const res = await fetch('/motolog/api/events', {
+        headers: { 'x-motolog-token': token },
+      });
+      if (res.ok && !ignore) {
+        const data = await res.json();
+        setEvents(data ?? []);
       }
+      if (!ignore) setLoading(false);
     }
 
-    loadData();
+    load();
     return () => {
-      isMounted = false;
+      ignore = true;
     };
-  }, []); // Kosongkan dependency jika hanya ingin load sekali saat mount
+  }, [token, refreshKey]);
 
   /* ============================= */
   /* HANDLERS                      */
   /* ============================= */
 
-  // Explicit type untuk field dan value
   const handleChange = (index: number, field: keyof Event, value: string) => {
     setEvents((prev) => {
       const updated = [...prev];
       const numericFields: (keyof Event)[] = ['odometer_km', 'fuel_liter', 'fuel_price_total'];
-
       updated[index] = {
         ...updated[index],
         [field]: numericFields.includes(field) ? (value === '' ? null : Number(value)) : value,
@@ -68,15 +95,20 @@ export default function SecretPage() {
 
   async function handleSave(event: Event, tempId: string) {
     setSavingId(tempId);
+    const res = await fetch('/motolog/api/admin', {
+      method: event.id ? 'PUT' : 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-motolog-token': token,
+      },
+      body: JSON.stringify(event),
+    });
 
-    const { error } = event.id ? await supabase.from('events').update(event).eq('id', event.id) : await supabase.from('events').insert([event]);
-
-    if (error) {
-      alert('Gagal: ' + error.message);
+    if (!res.ok) {
+      const err = await res.json();
+      alert('Gagal: ' + err.error);
     } else {
-      // Refresh data secara manual setelah save berhasil
-      const { data } = await supabase.from('events').select('*').order('event_date', { ascending: false }).order('odometer_km', { ascending: false });
-      setEvents(data || []);
+      await loadData();
     }
     setSavingId(null);
   }
@@ -93,15 +125,44 @@ export default function SecretPage() {
     setEvents([newRow, ...events]);
   };
 
+  /* ============================= */
+  /* AUTH GATE                     */
+  /* ============================= */
+
+  if (!token) {
+    return (
+      <main style={{ minHeight: '100vh', background: '#000', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ background: '#111', padding: 40, borderRadius: 24, width: 340, border: '1px solid #222', textAlign: 'center' }}>
+          <h3 style={{ marginBottom: 8 }}>MotoLog Admin</h3>
+          <p style={{ color: '#555', fontSize: 13, marginBottom: 24 }}>Restricted access</p>
+          <input
+            type='password'
+            placeholder='Enter Code'
+            value={tokenInput}
+            onChange={(e) => setTokenInput(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleAuth()}
+            style={{ width: '100%', padding: 12, marginBottom: 16, background: '#000', border: '1px solid #333', color: '#fff', borderRadius: 12, textAlign: 'center', fontSize: 18, boxSizing: 'border-box' }}
+          />
+          <button
+            onClick={handleAuth}
+            disabled={authLoading}
+            style={{ width: '100%', padding: 14, background: '#fff', color: '#000', borderRadius: 12, fontWeight: 700, cursor: 'pointer', border: 'none' }}
+          >
+            {authLoading ? 'Verifying...' : 'Unlock'}
+          </button>
+          {authError && <p style={{ color: '#ff3b3b', marginTop: 16 }}>{authError}</p>}
+        </div>
+      </main>
+    );
+  }
+
   if (loading) return <div style={{ color: '#fff', padding: 40 }}>Loading system...</div>;
 
   return (
     <main style={containerStyle}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 30 }}>
         <h1>MotoLog Admin</h1>
-        <button onClick={addRow} style={addButtonStyle}>
-          + Event Baru
-        </button>
+        <button onClick={addRow} style={addButtonStyle}>+ Event Baru</button>
       </div>
 
       <div style={tableContainerStyle}>
@@ -109,9 +170,7 @@ export default function SecretPage() {
           <thead>
             <tr style={headerRowStyle}>
               {['Tanggal', 'Tipe', 'Odometer', 'Ltr', 'Total Harga', 'Catatan', ''].map((h) => (
-                <th key={h} style={thStyle}>
-                  {h}
-                </th>
+                <th key={h} style={thStyle}>{h}</th>
               ))}
             </tr>
           </thead>
@@ -145,7 +204,11 @@ export default function SecretPage() {
                     <input type='text' placeholder='...' value={event.notes ?? ''} onChange={(e) => handleChange(i, 'notes', e.target.value)} style={inputStyle} />
                   </td>
                   <td style={tdStyle}>
-                    <button onClick={() => handleSave(event, rowId)} disabled={savingId === rowId} style={{ ...saveButtonStyle, opacity: savingId === rowId ? 0.5 : 1 }}>
+                    <button
+                      onClick={() => handleSave(event, rowId)}
+                      disabled={savingId === rowId}
+                      style={{ ...saveButtonStyle, opacity: savingId === rowId ? 0.5 : 1 }}
+                    >
                       {savingId === rowId ? '...' : 'Simpan'}
                     </button>
                   </td>
@@ -159,7 +222,6 @@ export default function SecretPage() {
   );
 }
 
-// Styles (Tetap sama dengan sebelumnya)
 const containerStyle: React.CSSProperties = { minHeight: '100vh', background: '#000', color: '#fff', padding: '40px 20px', maxWidth: '1200px', margin: '0 auto' };
 const tableContainerStyle: React.CSSProperties = { background: '#0a0a0a', borderRadius: '16px', border: '1px solid #222', padding: '10px', overflowX: 'auto' };
 const inputStyle: React.CSSProperties = { width: '100%', padding: '10px', background: '#111', border: '1px solid #333', borderRadius: '8px', color: '#fff', fontSize: '14px' };
