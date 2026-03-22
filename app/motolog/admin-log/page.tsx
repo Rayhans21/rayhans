@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 
-type EventType = 'fuel' | 'oil_change' | 'periodic_service' | 'tire_change' | 'gear_oil';
+type EventType = 'fuel' | 'oil_change' | 'gear_oil' | 'cvt_service' | 'air_filter' | 'drive_belt' | 'spare_part';
 
 type Event = {
   id?: string;
@@ -13,6 +13,16 @@ type Event = {
   fuel_price_total?: number | null;
   notes?: string | null;
 };
+
+const EVENT_OPTIONS: { value: EventType; label: string }[] = [
+  { value: 'fuel', label: '⛽ Fuel' },
+  { value: 'oil_change', label: '🛢️ Ganti Oli Mesin' },
+  { value: 'gear_oil', label: '⚙️ Ganti Oli Gardan' },
+  { value: 'cvt_service', label: '🔧 CVT & TB Cleaning' },
+  { value: 'air_filter', label: '💨 Filter Udara' },
+  { value: 'drive_belt', label: '⛓ V-Belt & Roller' },
+  { value: 'spare_part', label: '🔩 Ganti Sparepart' },
+];
 
 export default function SecretPage() {
   const [token, setToken] = useState('');
@@ -97,18 +107,14 @@ export default function SecretPage() {
     setSavingId(tempId);
     const res = await fetch('/motolog/api/admin', {
       method: event.id ? 'PUT' : 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-motolog-token': token,
-      },
+      headers: { 'Content-Type': 'application/json', 'x-motolog-token': token },
       body: JSON.stringify(event),
     });
-
     if (!res.ok) {
       const err = await res.json();
       alert('Gagal: ' + err.error);
     } else {
-      await loadData();
+      loadData();
     }
     setSavingId(null);
   }
@@ -143,11 +149,7 @@ export default function SecretPage() {
             onKeyDown={(e) => e.key === 'Enter' && handleAuth()}
             style={{ width: '100%', padding: 12, marginBottom: 16, background: '#000', border: '1px solid #333', color: '#fff', borderRadius: 12, textAlign: 'center', fontSize: 18, boxSizing: 'border-box' }}
           />
-          <button
-            onClick={handleAuth}
-            disabled={authLoading}
-            style={{ width: '100%', padding: 14, background: '#fff', color: '#000', borderRadius: 12, fontWeight: 700, cursor: 'pointer', border: 'none' }}
-          >
+          <button onClick={handleAuth} disabled={authLoading} style={{ width: '100%', padding: 14, background: '#fff', color: '#000', borderRadius: 12, fontWeight: 700, cursor: 'pointer', border: 'none' }}>
             {authLoading ? 'Verifying...' : 'Unlock'}
           </button>
           {authError && <p style={{ color: '#ff3b3b', marginTop: 16 }}>{authError}</p>}
@@ -162,7 +164,9 @@ export default function SecretPage() {
     <main style={containerStyle}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 30 }}>
         <h1>MotoLog Admin</h1>
-        <button onClick={addRow} style={addButtonStyle}>+ Event Baru</button>
+        <button onClick={addRow} style={addButtonStyle}>
+          + Event Baru
+        </button>
       </div>
 
       <div style={tableContainerStyle}>
@@ -170,7 +174,9 @@ export default function SecretPage() {
           <thead>
             <tr style={headerRowStyle}>
               {['Tanggal', 'Tipe', 'Odometer', 'Ltr', 'Total Harga', 'Catatan', ''].map((h) => (
-                <th key={h} style={thStyle}>{h}</th>
+                <th key={h} style={thStyle}>
+                  {h}
+                </th>
               ))}
             </tr>
           </thead>
@@ -184,11 +190,11 @@ export default function SecretPage() {
                   </td>
                   <td style={tdStyle}>
                     <select value={event.event_type} onChange={(e) => handleChange(i, 'event_type', e.target.value as EventType)} style={inputStyle}>
-                      <option value='fuel'>⛽ Fuel</option>
-                      <option value='oil_change'>🛢️ Oil Change</option>
-                      <option value='gear_oil'>⚙️ Gear Oil</option>
-                      <option value='periodic_service'>🛠️ Service</option>
-                      <option value='tire_change'>🛞 Tire</option>
+                      {EVENT_OPTIONS.map(({ value, label }) => (
+                        <option key={value} value={value}>
+                          {label}
+                        </option>
+                      ))}
                     </select>
                   </td>
                   <td style={tdStyle}>
@@ -204,11 +210,7 @@ export default function SecretPage() {
                     <input type='text' placeholder='...' value={event.notes ?? ''} onChange={(e) => handleChange(i, 'notes', e.target.value)} style={inputStyle} />
                   </td>
                   <td style={tdStyle}>
-                    <button
-                      onClick={() => handleSave(event, rowId)}
-                      disabled={savingId === rowId}
-                      style={{ ...saveButtonStyle, opacity: savingId === rowId ? 0.5 : 1 }}
-                    >
+                    <button onClick={() => handleSave(event, rowId)} disabled={savingId === rowId} style={{ ...saveButtonStyle, opacity: savingId === rowId ? 0.5 : 1 }}>
                       {savingId === rowId ? '...' : 'Simpan'}
                     </button>
                   </td>
