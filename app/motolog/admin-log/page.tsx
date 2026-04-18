@@ -25,7 +25,8 @@ const EVENT_OPTIONS: { value: EventType; label: string }[] = [
 ];
 
 export default function SecretPage() {
-  const [token, setToken] = useState('');
+  const [authenticated, setAuthenticated] = useState(false);
+  const [sessionChecked, setSessionChecked] = useState(false);
   const [tokenInput, setTokenInput] = useState('');
   const [authError, setAuthError] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
@@ -35,22 +36,38 @@ export default function SecretPage() {
   const [savingId, setSavingId] = useState<string | null>(null);
 
   /* ============================= */
-  /* AUTH                          */
+  /* AUTH + SESSION                */
   /* ============================= */
+
+  useEffect(() => {
+    let ignore = false;
+    async function probe() {
+      const res = await fetch('/motolog/api/auth', { credentials: 'include' });
+      const data = await res.json();
+      if (!ignore && data.authenticated) setAuthenticated(true);
+      if (!ignore) setSessionChecked(true);
+    }
+    probe();
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
   async function handleAuth() {
     setAuthLoading(true);
     setAuthError('');
     const res = await fetch('/motolog/api/auth', {
       method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ password: tokenInput }),
     });
     const data = await res.json();
-    if (data.success) {
-      setToken(tokenInput);
+    if (res.ok && data.success) {
       setTokenInput('');
+      setAuthenticated(true);
     } else {
-      setAuthError('Password salah');
+      setAuthError(data.error === 'Too many attempts' ? 'Terlalu banyak percobaan. Coba lagi nanti.' : 'Password salah');
     }
     setAuthLoading(false);
   }
@@ -66,14 +83,12 @@ export default function SecretPage() {
   }
 
   useEffect(() => {
-    if (!token) return;
+    if (!authenticated) return;
     let ignore = false;
 
     async function load() {
       setLoading(true);
-      const res = await fetch('/motolog/api/events', {
-        headers: { 'x-motolog-token': token },
-      });
+      const res = await fetch('/motolog/api/events', { credentials: 'include' });
       if (res.ok && !ignore) {
         const data = await res.json();
         setEvents(data ?? []);
@@ -85,7 +100,7 @@ export default function SecretPage() {
     return () => {
       ignore = true;
     };
-  }, [token, refreshKey]);
+  }, [authenticated, refreshKey]);
 
   /* ============================= */
   /* HANDLERS                      */
@@ -107,7 +122,8 @@ export default function SecretPage() {
     setSavingId(tempId);
     const res = await fetch('/motolog/api/admin', {
       method: event.id ? 'PUT' : 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-motolog-token': token },
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(event),
     });
     if (!res.ok) {
@@ -135,7 +151,15 @@ export default function SecretPage() {
   /* AUTH GATE                     */
   /* ============================= */
 
-  if (!token) {
+  if (!sessionChecked) {
+    return (
+      <main style={{ minHeight: '100vh', background: '#000', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <p style={{ color: '#555' }}>Loading…</p>
+      </main>
+    );
+  }
+
+  if (!authenticated) {
     return (
       <main style={{ minHeight: '100vh', background: '#000', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ background: '#111', padding: 40, borderRadius: 24, width: 340, border: '1px solid #222', textAlign: 'center' }}>

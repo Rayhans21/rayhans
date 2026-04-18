@@ -1,10 +1,9 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase-motolog';
+import { isMotologRequestAuthenticated } from '@/lib/motolog-auth-request';
 
-export async function GET(req: Request) {
-  const token = req.headers.get('x-motolog-token');
-
-  if (!process.env.MOTOLOG_PASSWORD || token !== process.env.MOTOLOG_PASSWORD) {
+export async function GET() {
+  if (!(await isMotologRequestAuthenticated())) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

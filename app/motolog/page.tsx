@@ -19,7 +19,7 @@ const DUMMY_EVENTS: Event[] = [
 const MAINTENANCE_ITEMS = [
   { key: 'oil_change', label: '🛢 Ganti Oli Mesin', interval: 2000 },
   { key: 'gear_oil', label: '⚙️ Ganti Oli Gardan', interval: 4000 },
-  { key: 'cvt_service', label: '🔧 CVT & TB Cleaning', interval: 8000 },
+  { key: 'cvt_service', label: '🔧 CVT & TB Cleaning', interval: 6000 },
   { key: 'air_filter', label: '💨 Filter Udara', interval: 16000 },
   { key: 'drive_belt', label: '⛓ V-Belt & Roller', interval: 24000 },
 ];
@@ -144,16 +144,31 @@ export default function MotoLogPage() {
   const [loading, setLoading] = useState(false);
 
   /* ============================= */
-  /* DATA FETCHING                 */
+  /* SESSION + DATA FETCHING       */
   /* ============================= */
+
+  useEffect(() => {
+    let ignore = false;
+    async function restoreSession() {
+      const res = await fetch('/motolog/api/auth', { credentials: 'include' });
+      const data = await res.json();
+      if (!ignore && data.authenticated) setIsPrivate(true);
+    }
+    restoreSession();
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
   useEffect(() => {
     if (!isPrivate) return;
     let ignore = false;
     async function loadRealData() {
-      const res = await fetch('/motolog/api/events', {
-        headers: { 'x-motolog-token': password },
-      });
+      const res = await fetch('/motolog/api/events', { credentials: 'include' });
+      if (!res.ok) {
+        if (!ignore) setRealEvents([]);
+        return;
+      }
       const data: Event[] = await res.json();
       if (!ignore) setRealEvents(data ?? []);
     }
@@ -161,7 +176,7 @@ export default function MotoLogPage() {
     return () => {
       ignore = true;
     };
-  }, [isPrivate, password]);
+  }, [isPrivate]);
 
   const displayEvents = (isPrivate ? realEvents : DUMMY_EVENTS).slice().sort((a, b) => new Date(b.event_date).getTime() - new Date(a.event_date).getTime());
 
@@ -291,12 +306,18 @@ export default function MotoLogPage() {
   async function handleUnlock() {
     setLoading(true);
     setError('');
-    const res = await fetch('/motolog/api/auth', { method: 'POST', body: JSON.stringify({ password }) });
+    const res = await fetch('/motolog/api/auth', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password }),
+    });
     const data = await res.json();
-    if (data.success) {
+    if (res.ok && data.success) {
+      setPassword('');
       setIsPrivate(true);
       setShowUnlock(false);
-    } else setError('Password salah');
+    } else setError(data.error === 'Too many attempts' ? 'Terlalu banyak percobaan. Coba lagi nanti.' : 'Password salah');
     setLoading(false);
   }
 
