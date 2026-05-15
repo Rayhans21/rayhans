@@ -3,10 +3,38 @@
 import { useRef, useState } from 'react';
 import { getVerifySupabase } from '@/lib/supabase-verify';
 import { attachSuratPdf, validatePdfFile } from '@/lib/verify-pdf';
+import { getVerifyPublicUrl } from '@/lib/verify-url';
+import type { Surat } from '@/lib/supabase-verify';
 import QRCode from 'qrcode';
 import styles from './page.module.css';
 
 const JENIS_SURAT = ['Surat Keterangan', 'Surat Penawaran', 'Surat Tugas', 'Surat Perjanjian', 'Surat Kuasa', 'Surat Pernyataan', 'Surat Undangan', 'Surat Rekomendasi', 'Surat Balasan', 'Surat Pengantar', 'Surat Lainnya'];
+
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+async function buildQrDataUrl(suratId: string) {
+  return QRCode.toDataURL(getVerifyPublicUrl(suratId), {
+    width: 300,
+    margin: 2,
+    color: { dark: '#0a1628', light: '#f8f5f0' },
+    errorCorrectionLevel: 'H',
+  });
+}
+
+function suratToForm(surat: Surat) {
+  const tanggal = new Date(surat.tanggal_ttd);
+  const pad = (n: number) => String(n).padStart(2, '0');
+  const tanggal_ttd = `${tanggal.getFullYear()}-${pad(tanggal.getMonth() + 1)}-${pad(tanggal.getDate())}T${pad(tanggal.getHours())}:${pad(tanggal.getMinutes())}`;
+  return {
+    nomor_surat: surat.nomor_surat,
+    judul_surat: surat.judul_surat,
+    jenis_surat: surat.jenis_surat,
+    perihal: surat.perihal ?? '',
+    penerima: surat.penerima ?? '',
+    catatan: surat.catatan ?? '',
+    tanggal_ttd,
+  };
+}
 
 function formatError(err: unknown): string {
   if (err && typeof err === 'object' && 'message' in err && typeof (err as { message: unknown }).message === 'string') {
@@ -44,6 +72,11 @@ export default function HomePage() {
   const [existingPdfError, setExistingPdfError] = useState('');
   const existingPdfInputRef = useRef<HTMLInputElement>(null);
 
+  const [regenerateId, setRegenerateId] = useState('');
+  const [regenerateLoading, setRegenerateLoading] = useState(false);
+  const [regenerateError, setRegenerateError] = useState('');
+  const [verifyLink, setVerifyLink] = useState('');
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -64,6 +97,7 @@ export default function HomePage() {
     setLoading(true);
     setError('');
     setQrUrl('');
+    setVerifyLink('');
     setPdfUploaded(false);
     setPdfUploadError('');
 
@@ -85,16 +119,12 @@ export default function HomePage() {
 
       if (dbError) throw dbError;
 
-      const verifyUrl = `${window.location.origin}/verify/${data.id}`;
-      const qrDataUrl = await QRCode.toDataURL(verifyUrl, {
-        width: 300,
-        margin: 2,
-        color: { dark: '#0a1628', light: '#f8f5f0' },
-        errorCorrectionLevel: 'H',
-      });
+      const verifyUrl = getVerifyPublicUrl(data.id);
+      const qrDataUrl = await buildQrDataUrl(data.id);
 
       setQrUrl(qrDataUrl);
       setSuratId(data.id);
+      setVerifyLink(verifyUrl);
       setLatePdfFile(null);
       if (latePdfInputRef.current) latePdfInputRef.current.value = '';
     } catch (err: unknown) {
@@ -118,6 +148,40 @@ export default function HomePage() {
       setPdfUploadError(formatError(err));
     } finally {
       setPdfUploading(false);
+    }
+  };
+
+  const handleRegenerateQr = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const id = regenerateId.trim();
+    if (!UUID_REGEX.test(id)) {
+      setRegenerateError('ID dokumen tidak valid. Salin UUID lengkap dari halaman verifikasi atau database.');
+      return;
+    }
+    setRegenerateLoading(true);
+    setRegenerateError('');
+    setQrUrl('');
+    setVerifyLink('');
+    try {
+      const { data, error: dbError } = await getVerifySupabase().from('surat').select('*').eq('id', id).single();
+      if (dbError || !data) throw new Error('Surat tidak ditemukan. Periksa ID dokumen.');
+
+      const surat = data as Surat;
+      const verifyUrl = getVerifyPublicUrl(surat.id);
+      const qrDataUrl = await buildQrDataUrl(surat.id);
+
+      setForm(suratToForm(surat));
+      setQrUrl(qrDataUrl);
+      setSuratId(surat.id);
+      setVerifyLink(verifyUrl);
+      setLatePdfFile(null);
+      setPdfUploaded(false);
+      setPdfUploadError('');
+      if (latePdfInputRef.current) latePdfInputRef.current.value = '';
+    } catch (err: unknown) {
+      setRegenerateError(formatError(err));
+    } finally {
+      setRegenerateLoading(false);
     }
   };
 
@@ -155,6 +219,9 @@ export default function HomePage() {
   const handleReset = () => {
     setQrUrl('');
     setSuratId('');
+    setVerifyLink('');
+    setRegenerateId('');
+    setRegenerateError('');
     setLatePdfFile(null);
     setPdfUploaded(false);
     setPdfUploadError('');
@@ -306,6 +373,34 @@ export default function HomePage() {
                 </button>
               </form>
             </div>
+
+            <div className={`${styles.card} ${styles.cardSecondary}`}>
+              <div className={styles.cardHeader}>
+                <span className={styles.cardIcon}>↻</span>
+                <h2 className={styles.cardTitle}>Generate Ulang QR (ID yang sama)</h2>
+              </div>
+              <form onSubmit={handleRegenerateQr} className={styles.form}>
+                <p className={styles.stepHint}>
+                  Untuk surat yang sudah terdaftar (misalnya QR sempat dibuat dari localhost). ID di database tidak berubah — hanya gambar QR baru dengan URL produksi.
+                </p>
+                <div className={styles.field}>
+                  <label className={styles.label}>ID Dokumen</label>
+                  <input
+                    value={regenerateId}
+                    onChange={(e) => {
+                      setRegenerateId(e.target.value);
+                      setRegenerateError('');
+                    }}
+                    placeholder='xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
+                    className={styles.input}
+                  />
+                </div>
+                {regenerateError && <p className={styles.error}>⚠ {regenerateError}</p>}
+                <button type='submit' disabled={regenerateLoading} className={styles.btnSecondary}>
+                  {regenerateLoading ? 'Memuat...' : '↻ Generate ulang QR'}
+                </button>
+              </form>
+            </div>
           </>
         ) : (
           <div className={styles.resultWrap}>
@@ -336,6 +431,7 @@ export default function HomePage() {
                   })}
                 </p>
                 <p className={styles.qrId}>ID: {suratId}</p>
+                {verifyLink && <p className={styles.qrLink}>{verifyLink}</p>}
               </div>
             </div>
 

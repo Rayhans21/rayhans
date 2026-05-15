@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
   env: {
     NEXT_PUBLIC_VSUPABASE_URL: process.env.VSUPABASE_URL,
     NEXT_PUBLIC_VSUPABASE_ANON_KEY: process.env.VSUPABASE_ANON_KEY,
+    NEXT_PUBLIC_VERIFY_BASE_URL: process.env.NEXT_PUBLIC_VERIFY_BASE_URL,
   },
   async redirects() {
     return [

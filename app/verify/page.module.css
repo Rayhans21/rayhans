@@ -343,6 +343,14 @@
   letter-spacing: 1px;
 }
 
+.qrLink {
+  color: var(--text-muted);
+  font-size: 0.6rem;
+  font-family: 'Courier New', monospace;
+  margin-top: 0.35rem;
+  word-break: break-all;
+}
+
 .actionRow {
   display: flex;
   gap: 1rem;
