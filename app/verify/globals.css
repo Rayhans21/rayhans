@@ -1,0 +1,30 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --navy: #0a1628;
+  --navy-light: #112240;
+  --gold: #c9a84c;
+  --gold-light: #e8c97a;
+  --cream: #f8f5f0;
+  --white: #ffffff;
+  --text-muted: #8892a4;
+  --border: rgba(201, 168, 76, 0.2);
+  --success: #1a7a4a;
+  --danger: #c0392b;
+}
+
+body {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  background: var(--cream);
+  color: var(--navy);
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
