@@ -1,6 +1,17 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
-export const supabase = createClient(
-  process.env.SUPABASE_MOTOLOG_URL!,
-  process.env.SUPABASE_MOTOLOG_ANON_KEY!
-);
+let client: SupabaseClient | undefined;
+
+export function getMotologSupabase(): SupabaseClient {
+  if (!client) {
+    const url = process.env.SUPABASE_MOTOLOG_URL;
+    const key = process.env.SUPABASE_MOTOLOG_ANON_KEY;
+    if (!url || !key) {
+      throw new Error(
+        'Missing SUPABASE_MOTOLOG_URL or SUPABASE_MOTOLOG_ANON_KEY. Add them to .env.local.',
+      );
+    }
+    client = createClient(url, key);
+  }
+  return client;
+}

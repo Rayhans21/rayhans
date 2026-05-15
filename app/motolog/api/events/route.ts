@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase-motolog';
+import { getMotologSupabase } from '@/lib/supabase-motolog';
 import { isMotologRequestAuthenticated } from '@/lib/motolog-auth-request';
 
 export async function GET() {
@@ -7,7 +7,7 @@ export async function GET() {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await getMotologSupabase()
     .from('events')
     .select('*')
     .order('event_date', { ascending: false });

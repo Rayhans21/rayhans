@@ -1,4 +1,5 @@
-import { supabase, Surat } from '@/lib/supabase-verify';
+import { getVerifySupabase, Surat } from '@/lib/supabase-verify';
+import { getSuratPdfPublicUrl } from '@/lib/verify-pdf';
 import styles from './verify.module.css';
 import { notFound } from 'next/navigation';
 
@@ -29,23 +30,29 @@ async function getSurat(id: string): Promise<Surat | null> {
   const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
   if (!uuidRegex.test(id)) return null;
 
-  const { data, error } = await supabase.from('surat').select('*').eq('id', id).single();
+  const { data, error } = await getVerifySupabase().from('surat').select('*').eq('id', id).single();
 
   if (error || !data) return null;
   return data as Surat;
 }
 
-export default async function VerifyPage({ params }: { params: { id: string } }) {
-  const surat = await getSurat(params.id);
+export default async function VerifyDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const surat = await getSurat(id);
 
   if (!surat) {
     notFound();
   }
 
+  const pdfUrl = surat.pdf_path ? getSuratPdfPublicUrl(surat.pdf_path) : null;
+
   return (
     <main className={styles.main}>
       <div className={styles.container}>
-        {/* Header verifikasi */}
         <div className={styles.verifyBanner}>
           <div className={styles.verifyIconWrap}>
             <svg width='32' height='32' viewBox='0 0 32 32' fill='none'>
@@ -59,7 +66,20 @@ export default async function VerifyPage({ params }: { params: { id: string } })
           </div>
         </div>
 
-        {/* Detail surat */}
+        <div className={styles.ttdCard}>
+          <div className={styles.ttdLeft}>
+            <p className={styles.ttdTopLabel}>Ditandatangani secara digital oleh</p>
+            <div className={styles.ttdMonogram}>MRS</div>
+          </div>
+          <div className={styles.ttdRight}>
+            <p className={styles.ttdNama}>{surat.penandatangan}</p>
+            <p className={styles.ttdWaktu}>{formatTanggal(surat.tanggal_ttd)}</p>
+            <div className={styles.ttdValidBadge}>
+              <span className={styles.ttdDot}></span>
+              Tanda tangan sah & valid
+            </div>
+          </div>
+        </div>
         <div className={styles.suratCard}>
           <div className={styles.suratHeader}>
             <div className={styles.jenisBadge}>{surat.jenis_surat}</div>
@@ -93,23 +113,26 @@ export default async function VerifyPage({ params }: { params: { id: string } })
           </div>
         </div>
 
-        {/* Blok tanda tangan */}
-        <div className={styles.ttdCard}>
-          <div className={styles.ttdLeft}>
-            <p className={styles.ttdTopLabel}>Ditandatangani secara digital oleh</p>
-            <div className={styles.ttdMonogram}>MRS</div>
-          </div>
-          <div className={styles.ttdRight}>
-            <p className={styles.ttdNama}>{surat.penandatangan}</p>
-            <p className={styles.ttdWaktu}>{formatTanggal(surat.tanggal_ttd)}</p>
-            <div className={styles.ttdValidBadge}>
-              <span className={styles.ttdDot}></span>
-              Tanda tangan sah & valid
-            </div>
-          </div>
-        </div>
+        {!pdfUrl && (
+          <p className={styles.pdfPending}>
+            Dokumen PDF belum diunggah. Penandatangan dapat mengunggah PDF final (dengan QR) dari halaman generator.
+          </p>
+        )}
 
-        {/* ID dokumen */}
+        {pdfUrl && (
+          <section className={styles.pdfSection}>
+            <div className={styles.pdfSectionHeader}>
+              <h2 className={styles.pdfTitle}>Dokumen Surat (PDF)</h2>
+              <a href={pdfUrl} target='_blank' rel='noopener noreferrer' className={styles.pdfDownload}>
+                Buka / unduh PDF
+              </a>
+            </div>
+            <iframe src={`${pdfUrl}#toolbar=1`} title={`Surat ${surat.nomor_surat}`} className={styles.pdfFrame} />
+          </section>
+        )}
+
+      
+
         <div className={styles.idBlock}>
           <p className={styles.idLabel}>ID Dokumen</p>
           <p className={styles.idValue}>{surat.id}</p>

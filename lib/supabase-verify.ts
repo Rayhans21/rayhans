@@ -1,9 +1,20 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
-const supabaseVerifyUrl = process.env.VSUPABASE_URL!;
-const supabaseVerifyAnonKey = process.env.VSUPABASE_ANON_KEY!;
+let client: SupabaseClient | undefined;
 
-export const supabase = createClient(supabaseVerifyUrl, supabaseVerifyAnonKey);
+export function getVerifySupabase(): SupabaseClient {
+  if (!client) {
+    const url = process.env.NEXT_PUBLIC_VSUPABASE_URL ?? process.env.VSUPABASE_URL;
+    const key = process.env.NEXT_PUBLIC_VSUPABASE_ANON_KEY ?? process.env.VSUPABASE_ANON_KEY;
+    if (!url || !key) {
+      throw new Error(
+        'Missing VSUPABASE_URL or VSUPABASE_ANON_KEY. Add them to .env.local.',
+      );
+    }
+    client = createClient(url, key);
+  }
+  return client;
+}
 
 export type Surat = {
   id: string;
@@ -15,5 +26,6 @@ export type Surat = {
   penandatangan: string;
   tanggal_ttd: string;
   catatan: string | null;
+  pdf_path: string | null;
   created_at: string;
 };

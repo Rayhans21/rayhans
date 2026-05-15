@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { supabaseOrari } from '@/lib/supabase-orari';
+import { getOrariSupabase } from '@/lib/supabase-orari';
 
 type Anggota = {
   id: string;
@@ -9,10 +9,10 @@ type Anggota = {
   masa_berlaku: string;
 };
 
-export const revalidate = 60;
+export const dynamic = 'force-dynamic';
 
 export default async function OrariPage() {
-  const { data } = await supabaseOrari.from('anggota').select('*').order('nama', { ascending: true });
+  const { data } = await getOrariSupabase().from('anggota').select('*').order('nama', { ascending: true });
 
   const anggota: Anggota[] = data ?? [];
   const today = new Date();

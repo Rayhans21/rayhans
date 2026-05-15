@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { supabaseOrari } from '@/lib/supabase-orari';
+import { getOrariSupabase } from '@/lib/supabase-orari';
 
 export default function Dashboard() {
   const [form, setForm] = useState({
@@ -13,7 +13,7 @@ export default function Dashboard() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const { error } = await supabaseOrari.from('anggota').insert([
+    const { error } = await getOrariSupabase().from('anggota').insert([
       {
         nama: form.nama,
         callsign: form.callsign,

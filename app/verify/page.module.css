@@ -152,6 +152,22 @@
   background: var(--white);
 }
 
+.fileInput {
+  width: 100%;
+  padding: 0.55rem 0;
+  font-size: 0.85rem;
+  font-family: 'Courier New', monospace;
+  color: var(--navy);
+}
+
+.fileHint {
+  margin-top: 0.35rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-family: 'Courier New', monospace;
+  line-height: 1.4;
+}
+
 .signatureBlock {
   border: 1px solid var(--border);
   border-radius: 3px;
@@ -332,6 +348,32 @@
   gap: 1rem;
   flex-wrap: wrap;
   justify-content: center;
+}
+
+.cardSecondary {
+  margin-top: 1.5rem;
+}
+
+.pdfUploadCard {
+  width: 100%;
+  max-width: 400px;
+}
+
+.stepHint {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.55;
+  margin-bottom: 0.25rem;
+}
+
+.successInline {
+  background: #f0faf5;
+  border: 1px solid rgba(26, 122, 74, 0.35);
+  color: var(--success);
+  padding: 0.65rem 1rem;
+  border-radius: 3px;
+  font-size: 0.85rem;
+  font-family: 'Courier New', monospace;
 }
 
 .hint {
