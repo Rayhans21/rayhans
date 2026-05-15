@@ -1,17 +1,19 @@
-import { supabase, Surat } from '@/lib/supabase'
-import styles from './verify.module.css'
-import { notFound } from 'next/navigation'
+import { supabase, Surat } from '@/lib/supabase-verify';
+import styles from './verify.module.css';
+import { notFound } from 'next/navigation';
 
 function formatTanggal(iso: string) {
-  return new Date(iso).toLocaleDateString('id-ID', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    timeZone: 'Asia/Jakarta',
-  }) + ' WIB'
+  return (
+    new Date(iso).toLocaleDateString('id-ID', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone: 'Asia/Jakarta',
+    }) + ' WIB'
+  );
 }
 
 function formatTanggalSingkat(iso: string) {
@@ -20,40 +22,35 @@ function formatTanggalSingkat(iso: string) {
     month: 'long',
     year: 'numeric',
     timeZone: 'Asia/Jakarta',
-  })
+  });
 }
 
 async function getSurat(id: string): Promise<Surat | null> {
-  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
-  if (!uuidRegex.test(id)) return null
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (!uuidRegex.test(id)) return null;
 
-  const { data, error } = await supabase
-    .from('surat')
-    .select('*')
-    .eq('id', id)
-    .single()
+  const { data, error } = await supabase.from('surat').select('*').eq('id', id).single();
 
-  if (error || !data) return null
-  return data as Surat
+  if (error || !data) return null;
+  return data as Surat;
 }
 
 export default async function VerifyPage({ params }: { params: { id: string } }) {
-  const surat = await getSurat(params.id)
+  const surat = await getSurat(params.id);
 
   if (!surat) {
-    notFound()
+    notFound();
   }
 
   return (
     <main className={styles.main}>
       <div className={styles.container}>
-
         {/* Header verifikasi */}
         <div className={styles.verifyBanner}>
           <div className={styles.verifyIconWrap}>
-            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-              <circle cx="16" cy="16" r="15" stroke="#c9a84c" strokeWidth="1.5"/>
-              <path d="M9 16.5L13.5 21L23 11" stroke="#c9a84c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            <svg width='32' height='32' viewBox='0 0 32 32' fill='none'>
+              <circle cx='16' cy='16' r='15' stroke='#c9a84c' strokeWidth='1.5' />
+              <path d='M9 16.5L13.5 21L23 11' stroke='#c9a84c' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round' />
             </svg>
           </div>
           <div>
@@ -116,9 +113,7 @@ export default async function VerifyPage({ params }: { params: { id: string } })
         <div className={styles.idBlock}>
           <p className={styles.idLabel}>ID Dokumen</p>
           <p className={styles.idValue}>{surat.id}</p>
-          <p className={styles.idDesc}>
-            Didaftarkan pada {formatTanggal(surat.created_at)}
-          </p>
+          <p className={styles.idDesc}>Didaftarkan pada {formatTanggal(surat.created_at)}</p>
         </div>
 
         <div className={styles.watermark}>
@@ -127,7 +122,7 @@ export default async function VerifyPage({ params }: { params: { id: string } })
         </div>
       </div>
     </main>
-  )
+  );
 }
 
-export const dynamic = 'force-dynamic'
+export const dynamic = 'force-dynamic';
