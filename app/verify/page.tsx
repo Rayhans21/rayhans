@@ -1,5 +1,3 @@
-'use client';
-
 import { useState } from 'react';
 import { supabase } from '@/lib/supabase-verify';
 import QRCode from 'qrcode';
