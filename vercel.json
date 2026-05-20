@@ -1,8 +1,9 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "crons": [
     {
       "path": "/motolog/api/keepalive",
-      "schedule": "0 0 */5 * *"
+      "schedule": "0 6 * * *"
     }
   ]
 }
