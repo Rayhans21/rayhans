@@ -1,0 +1,378 @@
+/* ── CONFIG & TOKENS ──────────────────────────────── */
+.root {
+  --red: #cc0000;
+  --white: #ffffff;
+  --blue: #005bb5;
+  --text: #1d1d1f;
+  --border: #e2e8f0;
+  --gray-bg: #f5f5f7;
+
+  background: #cbd5e1;
+  font-family: 'Inter', sans-serif;
+  color: var(--text);
+  line-height: 1.5;
+  padding: 30px 0;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+/* ── INTERACTIVE FAB ──────────────────────────────── */
+.fabPrint {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: var(--blue);
+  color: white;
+  border: none;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  transition: transform 0.2s;
+}
+.fabPrint:hover {
+  transform: scale(1.05);
+  background-color: var(--red);
+}
+
+/* ── ALL PAGES ARE STRICTLY A4 LANDSCAPE ──────────── */
+.page {
+  width: 297mm;
+  height: 210mm;
+  background: var(--white);
+  margin: 20px auto;
+  padding: 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Inner Frames */
+.pageInnerCover,
+.pageInner {
+  width: 100%;
+  height: 100%;
+  border: 1.5px solid var(--border);
+  border-radius: 16px;
+  position: relative;
+  box-sizing: border-box;
+  padding: 20px 28px;
+}
+.pageInnerCover {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 80px;
+}
+
+/* Dynamic Internal Layouts */
+.layoutLand {
+  display: flex;
+  flex-direction: column;
+}
+.layoutPort {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 40px;
+}
+
+/* Accent Border Dashes */
+.borderAccentRed {
+  position: absolute;
+  top: -1.5px;
+  left: 40px;
+  width: 40px;
+  height: 3px;
+  background: var(--red);
+  border-radius: 2px;
+}
+.borderAccentBlue {
+  position: absolute;
+  top: -1.5px;
+  left: 85px;
+  width: 30px;
+  height: 3px;
+  background: var(--blue);
+  border-radius: 2px;
+}
+
+/* ── COVER TYPOGRAPHY ─────────────────────────────── */
+.coverContent {
+  padding: 0 20px;
+}
+.coverLabel {
+  font-size: 13px;
+  letter-spacing: 3px;
+  color: #888;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.coverName {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 60px;
+  line-height: 1.1;
+  margin: 0;
+  font-weight: 700;
+  letter-spacing: -1px;
+}
+.coverName span {
+  color: var(--red);
+}
+.coverTagline {
+  font-size: 16px;
+  color: #555;
+  margin: 12px 0 24px 0;
+  font-weight: 500;
+}
+.coverHorizontalLineRed {
+  width: 80px;
+  height: 5px;
+  background-color: var(--red);
+  margin-bottom: 24px;
+}
+.coverStatement {
+  font-size: 15px;
+  color: var(--text);
+  max-width: 600px;
+  line-height: 1.7;
+}
+
+/* ── COMMON PROJECT STYLES ────────────────────────── */
+.projectHeader {
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+}
+.projectTitle {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 21px;
+  margin: 0;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+.numRed {
+  color: var(--red);
+  font-weight: 400;
+}
+.projectSubtitle {
+  font-size: 12px;
+  color: #666;
+  margin: 2px 0 8px 0;
+}
+.tagRow {
+  display: flex;
+  gap: 6px;
+}
+.tag {
+  font-size: 9px;
+  background-color: #f1f5f9;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-weight: 600;
+  color: #475569;
+}
+
+/* Next.js Image Config */
+.projectImg {
+  object-fit: cover;
+  object-position: top center;
+  border-radius: 12px;
+}
+.imagePlaceholder {
+  font-size: 13px;
+  color: #94a3b8;
+  font-family: monospace;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+}
+
+/* Common Typography & Spacing */
+.headerBlue {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 12px;
+  text-transform: uppercase;
+  color: var(--blue);
+  letter-spacing: 1px;
+  margin: 0 0 4px 0;
+  border-left: 3px solid var(--blue);
+  padding-left: 8px;
+  font-weight: 700;
+}
+.textRegular {
+  font-size: 11.5px;
+  color: var(--text);
+  line-height: 1.55;
+  margin: 0;
+  text-align: justify;
+}
+.sectionSmall {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--border);
+}
+.headerSmallBlue {
+  font-size: 9px;
+  text-transform: uppercase;
+  color: var(--blue);
+  margin: 0 0 2px 0;
+  font-weight: 700;
+}
+.textSmall {
+  font-size: 11px;
+  color: #333;
+  margin: 0;
+  line-height: 1.4;
+}
+.metaGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.bulletList {
+  margin: 0;
+  padding-left: 14px;
+  font-size: 11.5px;
+  color: var(--text);
+  line-height: 1.5;
+}
+.bulletList li {
+  margin-bottom: 5px;
+}
+.projectLinkBlue {
+  font-size: 11px;
+  color: var(--blue);
+  font-family: monospace;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-block;
+}
+
+/* ── LAYOUT A: LANDSCAPE (Gambar 60%, Teks Bawah) ── */
+.imgAreaLand {
+  height: 60%;
+  width: 100%;
+  background-color: #fafafa;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 12px;
+  position: relative; /* Wajib untuk <Image fill /> */
+}
+.contentAreaLand {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.gridLand {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr 1fr;
+  gap: 20px;
+  flex: 1;
+  min-height: 0;
+}
+.columnEnd {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header Landscape Kanan-Kiri (Menyelesaikan Overlap) */
+.projectHeaderLand {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 6px;
+  margin-bottom: 10px;
+  gap: 20px;
+}
+.projectMetaLeft {
+  flex: 1;
+}
+.projectMetaRight {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  width: 45%;
+  background: #f8fafc;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+.metaRightCol {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── LAYOUT B: PORTRAIT (Teks Kiri, Gambar Kanan) ─── */
+.contentAreaPort {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+.gridPort {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+}
+.imgAreaPort {
+  width: 100%;
+  height: 100%;
+  background-color: #fafafa;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative; /* Wajib untuk <Image fill /> */
+}
+
+/* ── GLOBAL NAV PROTECTIONS & PRINT SYSTEM ────────── */
+:global(nav),
+:global(.navbar),
+:global(header) {
+  display: none !important;
+}
+
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 0;
+  }
+
+  :global(nav),
+  :global(.navbar),
+  :global(header) {
+    display: none !important;
+  }
+
+  .fabPrint {
+    display: none;
+  }
+  .root {
+    background: white;
+    padding: 0;
+  }
+
+  .page {
+    margin: 0;
+    box-shadow: none;
+    border: none;
+    padding: 20px;
+    page-break-after: always;
+  }
+  .page:last-child {
+    page-break-after: avoid;
+  }
+}
