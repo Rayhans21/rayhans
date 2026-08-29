@@ -181,7 +181,7 @@ export default function MotoLogPage() {
   const displayEvents = (isPrivate ? realEvents : DUMMY_EVENTS).slice().sort((a, b) => new Date(b.event_date).getTime() - new Date(a.event_date).getTime());
 
   const plateNumber = isPrivate ? 'BM 4583 AAL' : 'YC 5 NCM';
-  const expNumber = isPrivate ? '10•24' : '21•02';
+  const expNumber = isPrivate ? '08•31' : '21•02';
   const latestOdometer = displayEvents[0]?.odometer_km ?? 0;
 
   /* ============================= */
